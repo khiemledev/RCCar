@@ -4,7 +4,6 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-
 // Setup RF24
 RF24 radio(4, 5);
 const byte address[6] = "00001";
@@ -19,11 +18,12 @@ class MyCallbacks: public BLECharacteristicCallbacks {
       std::string value = pCharacteristic->getValue();
 
       if (value.length() > 0) {
-          char data[50] = {0};
+          char d[50] = {0};
         for (int i = 0; i < value.length(); i++) {
-          data[i] = value[i];
+          d[i] = value[i];
         }
-        radio.write(&data, sizeof(data));
+        radio.write(&d, sizeof(d));
+        Serial.println(d);
       }
     }
 };
@@ -52,6 +52,7 @@ void setup() {
   pAdvertising->start();
 
   // Setup RF24
+  radio.setPALevel(RF24_PA_MAX);
   radio.begin();
   radio.openWritingPipe(address);
   radio.stopListening();

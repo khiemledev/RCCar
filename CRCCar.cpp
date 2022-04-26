@@ -16,11 +16,21 @@ void CRCCar::accelerate() {
   int leftSpeed = this->baseSpeed + (255 - this->baseSpeed) * abs(this->verlocity);
   int rightSpeed = this->baseSpeed + (255 - this->baseSpeed) * abs(this->verlocity);
 
+  if (this->verlocity == 0) {
+    leftSpeed = 0;
+    rightSpeed = 0;
+  }
+
   if (this->steering < 0) {
     leftSpeed -= (255 - this->baseSpeed) * abs(this->steering);
+    leftSpeed = max(0, leftSpeed);
   } else {
     rightSpeed -= (255 - this->baseSpeed) * abs(this->steering);
+    rightSpeed = max(0, rightSpeed);
   }
+
+  
+  Serial.print(leftSpeed); Serial.print("  "); Serial.print(rightSpeed); Serial.println();
 
   if (this->verlocity < 0) {
     // Move forward

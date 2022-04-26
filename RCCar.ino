@@ -12,16 +12,17 @@ const byte address[6] = "00001";
 void setup() {
   Serial.begin(115200);
 
+  radio.setPALevel(RF24_PA_MAX);
   radio.begin();
   radio.openReadingPipe(0, address);
   radio.startListening();
 
-  Serial.println("The device started, now you can pair it with bluetooth!");
+  Serial.println("Connect your device to transmitor to control!");
 }
 
 void loop() {
   if (radio.available()) {
-    char text[32] = {0};
+    char text[50] = {0};
     radio.read(&text, sizeof(text));
 
     float x = 0.0;
@@ -34,11 +35,12 @@ void loop() {
         x = atof(pch);
       else
         y = atof(pch);
+      i++;
       pch = strtok(NULL, " ");
     }
-    Serial.print(x); Serial.print(" __ "); Serial.println(y);
-    car.setVerlocity(x);
-    car.setSteering(y);
+//    Serial.print(x); Serial.print(" __ "); Serial.println(y);
+    car.setVerlocity(y);
+    car.setSteering(x);
   }
   car.accelerate();
   delay(20);
