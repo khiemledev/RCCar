@@ -1,11 +1,9 @@
 #include "CRCCar.h"
 
 CRCCar::CRCCar() {
-  this->speed = 0;
-  this->baseSpeed = 150;
-  this->steering = STRAIGHT;
-  this->direction = FORWARD;
-  this->rotating = -1;
+  this->baseSpeed = 100;
+  this->steering = 0.0;
+  this->verlocity = 0.0;
 
   // Set output pins
   pinMode(MA1, OUTPUT);
@@ -15,44 +13,23 @@ CRCCar::CRCCar() {
 }
 
 void CRCCar::accelerate() {
-  if (this->rotating == ROT_LEFT) {
-    analogWrite(MA1, LOW);
-    analogWrite(MA2, 150);
-  
-    analogWrite(MB1, 150);
-    analogWrite(MB2, LOW);
-    return;
-  } else if (this->rotating == ROT_RIGHT) {
-    analogWrite(MA1, 150);
-    analogWrite(MA2, LOW);
-  
-    analogWrite(MB1, LOW);
-    analogWrite(MB2, 150);
-    return;
-  }
-  
-  if (this->speed == 0) {
-    analogWrite(MA1, LOW);
-    analogWrite(MA2, LOW);
-    analogWrite(MB1, LOW);
-    analogWrite(MB2, LOW);
-    return;
-  }
-  
-  int leftSpeed = this->speed;
-  int rightSpeed = this->speed;
-  if (this->steering == LEFT) {
-    leftSpeed /= 4;
-  } else if (this->steering == RIGHT) {
-    rightSpeed /= 4;
+  int leftSpeed = this->baseSpeed + (255 - this->baseSpeed) * abs(this->verlocity);
+  int rightSpeed = this->baseSpeed + (255 - this->baseSpeed) * abs(this->verlocity);
+
+  if (this->steering < 0) {
+    leftSpeed -= (255 - this->baseSpeed) * abs(this->steering);
+  } else {
+    rightSpeed -= (255 - this->baseSpeed) * abs(this->steering);
   }
 
-  if (this->direction == FORWARD) {
+  if (this->verlocity < 0) {
+    // Move forward
     analogWrite(MA1, LOW);
     analogWrite(MA2, leftSpeed);
     analogWrite(MB1, LOW);
     analogWrite(MB2, rightSpeed);
-  } else if (this->direction == BACKWARD) {
+  } else {
+    // Move backward
     analogWrite(MA1, leftSpeed);
     analogWrite(MA2, LOW);
     analogWrite(MB1, rightSpeed);
@@ -60,44 +37,10 @@ void CRCCar::accelerate() {
   }
 }
 
-void CRCCar::resetSpeed() {
-  this->speed = this->baseSpeed;
+void CRCCar::setSteering(float value) {
+  this->steering = min((float) 1.0, max((float) -1.0, value));
 }
 
-void CRCCar::stop() {
-  this->speed = 0;
-}
-
-void CRCCar::forward() {
-  this->direction = FORWARD;
-  this->resetSpeed();
-}
-
-void CRCCar::backward() {
-  this->direction = BACKWARD;
-  this->resetSpeed();
-}
-
-void CRCCar::turnLeft() {
-  this->steering = LEFT;
-}
-
-void CRCCar::turnRight() {
-  this->steering = RIGHT;
-}
-
-void CRCCar::rotateLeft() {
-  this->rotating = ROT_LEFT;
-}
-
-void CRCCar::rotateRight() {
-  this->rotating = ROT_RIGHT;
-}
-
-void CRCCar::stopRotating() {
-  this->rotating = -1;
-}
-
-void CRCCar::goStraight() {
-  this->steering = STRAIGHT;
+void CRCCar::setVerlocity(float value) {
+  this->verlocity = min((float) 1.0, max((float) -1.0, value));
 }

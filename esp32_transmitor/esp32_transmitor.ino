@@ -9,7 +9,7 @@
 RF24 radio(4, 5);
 const byte address[6] = "00001";
 
-#define DEVICE_NAME         "ESP32 Transmitor"
+#define DEVICE_NAME         "RCCar v0.4"
 #define SERVICE_UUID        "f645c32d-d949-4241-991e-b422029c4418"
 #define CHARACTERISTIC_UUID "dce9aefb-a236-4edb-88e2-a4ecee57b469"
 
@@ -55,6 +55,8 @@ void setup() {
   radio.begin();
   radio.openWritingPipe(address);
   radio.stopListening();
+
+  Serial.println("Setup done! Now you can connect using BLE.");
 }
 
 void loop() {
